@@ -1,0 +1,94 @@
+<StandardButton@Button>:
+    height: "40dp"
+    size_hint_x: 0.8
+    size_hint_y: None
+    pos_hint: {'center_x': 0.5 }
+
+
+<ErrorPopup>:
+    size_hint: .5, .5
+    auto_dismiss: False
+    title: 'Error'
+    message_label: message_label
+    GridLayout:
+        rows: 2
+        Label:
+            id: message_label
+            text_size: 0.9*self.width, None
+            text: ''
+        StandardButton:
+            text: 'OK'
+            on_press: root.dismiss()
+
+
+<SimpleInputPopup>:
+    size_hint: 0.9, None
+    height: "200dp"
+    auto_dismiss: False
+    title: "Input"
+    input_field: input_field
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: "10dp"
+        padding: "10dp"
+
+        TabbableTextInput:
+            id: input_field
+            multiline: False
+            size_hint: (1.0, None)
+            height: "40dp"
+            focus: True
+            next: ok_button
+         
+        BoxLayout:
+            orientation: 'horizontal'
+            StandardButton:
+                text: 'Cancel'
+                on_press: root.dismiss()
+         
+            StandardButton:
+                id: ok_button
+                text: 'OK'
+                on_press: root.dispatch('on_input_ok')
+
+<SliderWithValue>:
+    orientation: "horizontal"
+    slider: slider
+    size_hint_y: None
+    height: "40dp"
+    TickSlider:
+        id: slider
+        min: 0
+        max: 10
+        step: 1
+        ticks_major: 10
+        # Undefined by default -- we'll take care of it in the code
+        # But users should read the main "value" property, and never this value
+        #   value: -1
+    NumericLabel:
+        value: root.value
+
+
+<DBLowercaseInputField>:
+    multiline: False
+    size_hint: (1.0, None)
+    height: "40dp"
+
+
+<NumericInputField>:
+    multiline: False
+    size_hint: (1.0, None)
+    height: "40dp"
+  
+<ScrollableTextDisplay>:
+    orientation: "horizontal"
+    height: "80dp"
+    ScrollView:
+        size_hint: (1, 1)
+        Label:
+            id: notes_content
+            text: root.text
+            text_size: (0.9*self.width, None)
+            size_hint: (1, None)
+            height: self.texture_size[1]    
+ 

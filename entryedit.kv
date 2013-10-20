@@ -1,0 +1,515 @@
+#:import la kivy.adapters.listadapter 
+#:import lbl kivy.uix.label
+
+<ListManagePopup>:
+    size_hint: .95, .95
+    auto_dismiss: False
+    title: 'Manage'
+    list_content: list_content
+    BoxLayout:
+        spacing: "10dp"
+        padding: "10dp"    
+        orientation: "vertical"
+        BoxLayout:
+            orientation: 'horizontal'
+            ListView:
+                id: list_content
+                size_hint_y: 1
+            BoxLayout:
+                orientation: 'vertical'
+                pos_hint: {'top': 1.65 }
+                StandardButton:
+                    text: 'New'
+                    on_press: root.new_list_item()
+                StandardButton:
+                    text: 'Edit or Change Status'
+                    on_press: root.edit_selected_item()
+        BoxLayout:
+            spacing: "10dp"
+            padding: "10dp"
+            orientation: "horizontal"
+            StandardButton:
+                text: "Drop Changes"
+                on_press: root.cancel_edits()
+            StandardButton:
+                text: "Save Changes"
+                on_press: root.save_edits()
+
+
+<EditPanelLabel>:
+    height: "40dp"
+    size_hint_y: None
+
+<EditPanelInput@DBLowercaseTextField>:
+    height: "40dp"
+    size_hint_y: None
+    multiline: False
+
+
+<ListManagerEditBlock>:
+    orientation: "vertical"
+    main_content: main_content
+    BoxLayout:
+        id: main_content
+    GridLayout:
+        rows: 1
+        cols: 2
+        EditPanelLabel: 
+            text: "Active"            
+        CheckBox:
+            active: root.active
+            id: active_checkbox
+            on_active: root.active = self.active
+
+
+<PainSiteEditPanel>:
+    cols: 2
+    spacing: "10dp"
+    padding: "10dp"
+    name_input: name_input
+    EditPanelLabel:
+        text: "Pain Site Name"
+    EditPanelInput:
+        id: name_input
+        value: root.record.location
+        focus: True
+
+                
+<PainSiteEditPopup>:
+    size_hint: .95, .95
+    auto_dismiss: False
+    title: 'Edit Pain Site Info'    
+    GridLayout:
+        cols: 2
+        spacing: "10dp"
+        padding: "10dp"
+        Label: 
+            text: "Name"
+        DBLowercaseTextField:
+            multiline: False
+            size_hint_y: None
+            height: "40dp"
+            text: root.location
+            on_value: root.location = self.value
+            focus: True
+            next: active_checkbox
+        Label: 
+            text: "Active"            
+        CheckBox:
+            active: root.active
+            id: active_checkbox
+            on_active: root.active = self.active
+        StandardButton: 
+            text: "OK"
+            on_press: root.save()
+        StandardButton:
+            text: "Cancel"
+            on_press: root.cancel()
+        
+<SymptomEditPanel>:
+    cols: 2
+    spacing: "10dp"
+    padding: "10dp"
+    name_input: name_input
+    EditPanelLabel:
+        text: "Symptom name"
+    EditPanelInput:
+        id: name_input
+        value: root.record.name
+        focus: True
+
+
+<EditPopup>:
+    size_hint: .95, .95
+    auto_dismiss: False
+    title: 'Edit'
+    main_content: main_content
+    GridLayout:
+        cols: 1
+        spacing: "10dp"
+        BoxLayout:
+            id: main_content
+            size_hint_y: 1.0            
+        GridLayout:
+            cols: 2
+            rows: 1
+            size_hint_y: None
+            # we want us to be at the lowest possible height here, just to contain the buttons
+            height: self.minimum_height
+            SharedButton:
+                text: 'Save'
+                on_press: root._handle_save()
+            SharedButton:
+                text: 'Cancel'
+                on_press: root.dismiss()
+   
+
+<NotesEditBlock>:
+    orientation: "vertical"
+    spacing: "10dp"
+    padding: "10dp"
+    notes_input: notes_input
+    EditPanelLabel:
+        text: "Notes text"
+    NormalizedTextField:
+        id: notes_input
+        focus: True
+
+
+<PainEditBlock>:
+    orientation: "vertical"
+    Label:
+        text: "Pain levels"
+    GridLayout:
+        rows: 2
+        cols: 2
+        Label: 
+            text: "Average Pain"
+        SliderWithValue: 
+            value: root.average_pain
+            on_value: root.average_pain = self.value
+        Label: 
+            text: "Maximum Pain"
+        SliderWithValue: 
+            value: root.max_pain    
+            on_value: root.max_pain = self.value
+         
+
+<PainDetailEditBlock>:
+    orientation: "vertical"
+    padding: "10dp"
+    pain_sites_block: pain_sites_block
+    Label:    
+        text: "Pain sites"
+        size_hint_y: None
+        height: "50dp"
+    ScrollView:
+        GridLayout:   
+            cols: 2
+            padding: "10dp"
+            spacing: "10dp"
+            id: pain_sites_block
+            height: self.minimum_height
+            size_hint_y: None
+            Label: 
+                text: "Location"
+                height: "40dp"
+                size_hint_y: None
+            Label:
+                text: "PainLevel"
+                height: "40dp"
+                size_hint_y: None                
+            # Below the labels there will be a set of pain sliders
+            # All populated with a loop from inside python
+
+
+
+<SymptomDetailEditBlock>:
+    orientation: "vertical"
+    padding: "10dp"
+    symptoms_block: symptoms_block
+    Label:    
+        text: "Symptoms"
+        size_hint_y: None
+        height: "50dp"
+    ScrollView:
+        GridLayout:   
+            cols: 2
+            padding: "10dp"
+            spacing: "10dp"
+            id: symptoms_block
+            height: self.minimum_height
+            size_hint_y: None
+            Label: 
+                text: "Location"
+                height: "40dp"
+                size_hint_y: None
+            Label:
+                text: "PainLevel"
+                height: "40dp"
+                size_hint_y: None                
+            # Below the labels there will be a set of pain sliders
+            # All populated with a loop from inside python
+
+    
+<MedicationEditPanel>:
+    cols: 2
+    spacing: "10dp"
+    padding: "10dp"
+    name_input: name_input
+    dosage_input: dosage_input
+    unit_input: unit_input
+    quantity_input: quantity_input
+    frequency_input: frequency_input
+    EditPanelLabel:
+        text: "Medication Name"
+    EditPanelInput:
+        id: name_input
+        next: dosage_input
+        focus: True
+    EditPanelLabel:
+        text: "Dosage"
+    NumericInputField:    
+        id: dosage_input
+        next: unit_input
+    EditPanelLabel:
+        text: "Unit"
+    EditPanelInput:
+        id: unit_input
+        next: quantity_input
+    EditPanelLabel:
+        text: "Quantity"
+    NumericInputField:
+        id: quantity_input
+        next: frequency_input
+    EditPanelLabel:
+        text: "Frequency"
+    EditPanelInput:
+        id: frequency_input
+
+
+    
+<MedicationDetailEditBlock>:
+    orientation: "vertical"
+    padding: "10dp"
+    medications_block: medications_block
+    Label:    
+        text: "Medications"
+        size_hint_y: None
+        height: "50dp"
+    ScrollView:
+        GridLayout:   
+            cols: 2
+            padding: "10dp"
+            spacing: "10dp"
+            id: medications_block
+            height: self.minimum_height
+            size_hint_y: None
+            Label: 
+                text: "Medication"
+                height: "40dp"
+                size_hint_y: None
+            Label:
+                text: "Quantity"
+                height: "40dp"
+                size_hint_y: None                
+            # Below the labels there will be a set of medication input fields
+            # All populated with a loop from inside python
+
+
+<TreatmentEditPanel>:
+    cols: 2
+    spacing: "10dp"
+    padding: "10dp"
+    name_input: name_input
+    provider_input: provider_input
+    frequency_input: frequency_input
+    EditPanelLabel:
+        text: "Treatment Name"
+    EditPanelInput:
+        id: name_input
+        next: provider_input        
+        focus: True
+    EditPanelLabel:
+        text: "Provider"
+    EditPanelInput:    
+        id: provider_input
+        next: frequency_input
+    EditPanelLabel:
+        text: "Frequency"
+    EditPanelInput:
+        id: frequency_input
+        
+
+<TreatmentDetailEditBlock>:
+    orientation: "vertical"
+    padding: "10dp"
+    treatments_block: treatments_block
+    Label:    
+        text: "Treatments"
+        size_hint_y: None
+        height: "50dp"
+    ScrollView:
+        GridLayout:   
+            cols: 2
+            padding: "10dp"
+            spacing: "10dp"
+            id: treatments_block
+            height: self.minimum_height
+            size_hint_y: None
+            Label: 
+                text: "Treatment"
+                height: "40dp"
+                size_hint_y: None
+                size_hint_x: 0.2
+            Label:
+                text: "Frequency/Duration"
+                height: "40dp"
+                size_hint_y: None                
+            # Below the labels there will be a set of treatment input fields
+            # All populated with a loop from inside python
+
+
+<SingleTreatmentDetailEditPanel>:
+    orientation: "horizontal"
+    first_editable_field: times_per_day_input
+    last_editable_field: minutes_input
+    times_per_day_input: times_per_day_input
+    hours_input: hours_input
+    minutes_input: minutes_input
+    size_hint_y: None
+    height: "40dp"
+    EditPanelLabel:    
+        text: "Times per day"
+    NumericInputField:    
+        id: times_per_day_input
+        value: root.treatment_detail.times_per_day 
+        next: hours_input
+    EditPanelLabel:    
+        text: "Hours"
+    NumericInputField:    
+        id: hours_input
+        value: root.treatment_detail.hours 
+        next: minutes_input
+    EditPanelLabel:    
+        text: "Minutes"
+    NumericInputField:    
+        id: minutes_input
+        value: root.treatment_detail.minutes 
+
+
+<SleepEditBlock>:
+    orientation: "vertical"
+    hours_input_field: hours_input_field
+    minutes_input_field: minutes_input_field
+    lights_out_input_field: lights_out_input_field
+    asleep_input_field: asleep_input_field
+    awake_input_field: awake_input_field
+    quality_slider: quality_slider
+    Label:
+        text: "Sleep"
+    GridLayout:
+        cols: 2
+        EditPanelLabel:
+            text: "Detailed"
+            state: "down"
+    GridLayout:
+        cols: 2
+        GridLayout:
+            cols: 2
+            EditPanelLabel:
+                text: "Hours"
+            NumericInputField:
+                id: hours_input_field
+                focus: True
+                next: minutes_input_field
+            EditPanelLabel:
+                text: "Minutes"
+            NumericInputField:
+                id: minutes_input_field
+            EditPanelLabel: 
+                text: "Quality"
+        GridLayout:
+            cols: 2
+            EditPanelLabel:
+                text: "Lights out"
+            TimeInputField:
+                id: lights_out_input_field
+                focus: True
+                next: asleep_input_field
+            EditPanelLabel:
+                text: "Fallen Asleep"
+            TimeInputField:
+                id: asleep_input_field
+                next: awake_input_field
+            EditPanelLabel:
+                text: "Wake up time"
+            TimeInputField:
+                id: awake_input_field
+    EditPanelLabel: 
+        text: "Quality"       
+    SliderWithValue: 
+        id: quality_slider
+
+<ActivityEditPanel>:
+    cols: 2
+    spacing: "10dp"
+    padding: "10dp"
+    name_input: name_input
+    EditPanelLabel:
+        text: "Activity Name"
+    EditPanelInput:
+        id: name_input
+        focus: True
+
+<ActivityDetailEditBlock>:
+    orientation: "vertical"
+    padding: "10dp"
+    activities_block: activities_block
+    Label:    
+        text: "Activities"
+        size_hint_y: None
+        height: "50dp"
+    ScrollView:
+        GridLayout:   
+            cols: 2
+            padding: "10dp"
+            spacing: "10dp"
+            id: activities_block
+            height: self.minimum_height
+            size_hint_y: None
+            Label: 
+                text: "Activity"
+                height: "40dp"
+                size_hint_y: None
+                size_hint_x: 0.2
+            Label:
+                text: "Duration and Intensity"
+                height: "40dp"
+                size_hint_y: None                
+            # Below the labels there will be a set of treatment input fields
+            # All populated with a loop from inside python
+
+
+<SingleActivityDetailEditPanel>:
+    canvas.before:
+        Color:
+            rgba: 0, 0.5, 1, 0.2
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+    orientation: "vertical"
+    first_editable_field: hours_input
+    last_editable_field: minutes_input
+    hours_input: hours_input
+    minutes_input: minutes_input
+    intensity_slider: intensity_slider
+    size_hint_y: None
+    height: "100dp"
+    BoxLayout:
+        orientation: "horizontal"
+        EditPanelLabel:    
+            text: "Hours"
+        NumericInputField:    
+            id: hours_input
+            value: root.activity_detail.hours 
+            next: minutes_input
+        EditPanelLabel:    
+            text: "Minutes"
+        NumericInputField:    
+            id: minutes_input
+            value: root.activity_detail.minutes 
+    BoxLayout:
+        orientation: "horizontal"
+        EditPanelLabel:
+            text: "Intensity"
+        SliderWithValue: 
+            size_hint_y: None
+            height: "60dp"
+            id: intensity_slider
+            value: root.activity_detail.intensity
+            
+
+
+        

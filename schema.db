@@ -1,0 +1,107 @@
+CREATE TABLE entries(record_id integer primary key,
+         date_entered text,
+	 time_entered text,
+   	 notes text,
+   	 UNIQUE(date_entered) ON CONFLICT FAIL
+  );
+
+
+CREATE TABLE painlevel(
+       	     record_id integer primary key,
+   	     averagepain unsigned tinyint,
+             maxpain unsigned tinyint,
+	     FOREIGN KEY (record_id) REFERENCES entries(record_id)
+            );
+
+CREATE TABLE painsite(
+       	    site_id integer primary key autoincrement,
+            location text,
+  	    active smallint default 1 NOT NULL,
+	    UNIQUE(date_entered) ON CONFLICT FAIL
+	    );
+
+CREATE TABLE paindetail(record_id integer not null,
+  	     site_id integer not null,	   
+	     painlevel unsigned tinyint,
+ 	     PRIMARY KEY(record_id, site_id),
+	     FOREIGN KEY(record_id) references entries(record_id),
+	     FOREIGN KEY(site_id) references painsite(site_id)
+	     );
+
+
+CREATE TABLE symptom(symptom_id integer primary key autoincremen,
+           name text,
+	   active smallint default 1 NOT NULL,
+	   UNIQUE(name) ON CONFLICT FAIL
+	   );
+
+CREATE TABLE symptomdetail(record_id integer not null,
+  	        symptom_id integer not null,	   
+	     	intensity unsigned tinyint,
+ 	     	PRIMARY KEY(record_id, symptom_id),
+		FOREIGN KEY(record_id) references entries(record_id),
+		FOREIGN KEY(symptom_id) references symptom(symptom_id)
+	     );
+
+CREATE TABLE medication(medication_id integer primary key autoincrement,
+   name text not null,
+   unit text NOT NULL,
+   dosage unsigned int NOT NULL,
+   quantity unsigned int NOT NULL,
+   frequency text,
+   active smallint default 1 NOT NULL,
+   UNIQUE(name,unit,dosage) ON CONFLICT FAIL
+);
+
+CREATE TABLE medicationdetail(record_id integer not null,
+  	        medication_id integer not null,	   
+	     	quantity unsigned int not null,
+ 	     	PRIMARY KEY(record_id, medication_id),
+		FOREIGN KEY(record_id) references entries(record_id),
+		FOREIGN KEY(medication_id) references medication(medication_id)
+	     );
+
+CREATE TABLE treatment(treatment_id integer primary key autoincrement,
+   name text not null,
+   provider text,
+   frequency text,
+   active smallint default 1 NOT NULL,
+   UNIQUE(name) ON CONFLICT FAIL
+  );
+
+CREATE TABLE treatmentdetail(record_id integer not null,
+  	        treatment_id integer not null,	   
+		times_per_day integer default 0 NOT NULL,
+		hours integer,
+		minutes integer,
+	        PRIMARY KEY(record_id, treatment_id),
+		FOREIGN KEY(record_id) references entries(record_id),
+		FOREIGN KEY(treatment_id) references treatment(treatment_id)
+	     );
+
+CREATE TABLE activity(activity_id integer primary key autoincrement,
+   name text not null,
+   active smallint default 1 NOT NULL,
+   UNIQUE(name) ON CONFLICT FAIL
+  );
+
+CREATE TABLE activitydetail(record_id integer not null,
+  	         activity_id integer not null,	   
+		 hours integer not null,
+		 minutes integer default(0),
+		 intensity unsigned tinyint,
+	        PRIMARY KEY(record_id, activity_id),
+		FOREIGN KEY(record_id) references entries(record_id),
+		FOREIGN KEY(activity_id) references activity(activity_id)
+	     );
+
+CREATE TABLE sleep(record_id integer PRIMARY KEY,
+        hours integer not null,
+        minutes integer default(0),
+        quality unsigned tinyint, 
+	light_out_time text, 
+	asleep_time text, 
+	awake_time text,
+        FOREIGN KEY(record_id) references entries(record_id)
+      );
+

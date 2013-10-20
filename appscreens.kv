@@ -1,0 +1,140 @@
+#:import la kivy.adapters.listadapter.ListAdapter
+ 
+<MyCustomScreen>: 
+
+ 
+<CalendarScreen>:
+    main_container: main_container
+    GridLayout:
+        rows: 2
+        spacing: "30dp"
+        id: main_container
+#      CreateEntryForm:
+# You cannot declare an entry list object here
+# This is because it will have no builder and you will not be able to fill it dynamically
+# Instead, initialize it in the code (with no arguments)      
+#      EntryList:
+
+
+<CreateEntryForm>:
+
+    canvas.before:
+        Color:
+            rgba: 0, 0.5, 1, 0.2
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+
+    note_input_box: note_input   
+    orientation: "vertical"
+    row_default_height: "40dp"
+    spacing: "10dp"
+    padding: "10dp"
+            
+    Label:
+        text: "New Entry for today"
+        bold: True
+        height: "40dp"
+        size_hint_y: None
+
+    Label:
+        text: "General notes"
+        height: "40dp"
+        size_hint_y: None
+               
+    TabbableTextInput:
+        id: note_input
+        multiline: True
+        size_hint: (1,1)
+        next: create_button
+
+    Button:
+        id: create_button
+        size_hint_y: None
+        height: "40dp"
+        text: "Create"
+        on_press: root.create_entry_for_today()
+
+<EntryList>:
+
+    canvas.before:
+        Color:
+            rgba: 1, 0, 0.3, 0.2
+        Rectangle:
+        # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+
+    orientation: "vertical"
+    row_default_height: "40dp"
+    spacing: "10dp"
+    padding: "10dp"
+
+    list_view: list_view
+
+    Label:
+        text: "Earlier Entries"
+        bold: True
+        height: "40dp"
+        size_hint_y: None
+ 
+    ListView:
+        id: list_view
+   
+    Button:
+        size_hint_y: None
+        height: "40dp"
+        text: "Show"
+        on_press: root.display_entry_for_selected_date()
+         
+
+<EntryListItem>:
+    size_hint_y: None
+    height: "100dp"
+    Label:
+        text: root.text
+        on_press: root.item_press_function()
+
+
+<EntryScreen>:
+    date: date
+    info_blocks: [ notes_info, pain_info, pain_site_info, symptom_info, medication_info, treatment_info, sleep_info, activity_info ]
+    main_container: main_container
+   
+    GridLayout:    
+        id: main_container
+        cols: 1
+        spacing: "10dp"
+        padding: ["10dp", 0 ]
+        rows_minimum: {0:30, 1: 20, 2 : 60}
+        row_default_height: "45dp"
+      
+        Label:         
+            text: "Date"
+        Label:
+            id: date
+        NotesInfoBlock:
+            id: notes_info
+        PainInfoBlock:
+            id: pain_info
+        PainDetailInfoBlock:
+            id: pain_site_info
+        SymptomInfoBlock:
+            id: symptom_info
+        MedicationInfoBlock:
+            id: medication_info
+        TreatmentInfoBlock:
+            id: treatment_info
+        SleepInfoBlock:
+            id: sleep_info
+        ActivityInfoBlock:
+            id: activity_info
+        Button:
+            text: "Back to calendar screen"
+            size_hint_y: None
+            height: "50dp"
+            on_press: app.show_calendar_screen()
+      
+         
+         

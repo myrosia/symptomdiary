@@ -1,0 +1,102 @@
+# The imports are necessary for the file to recognize classes defined in those files, e.g. PainInfoBlock
+#:import dc diary_content
+#:import sy symptoms
+#:import md medications
+#:import tr treatments
+#:import sl sleep
+#:import pi pain_info
+#:import pd pain_detail
+#:import ac activities
+#:import no notes
+#:import la kivy.adapters.listadapter.ListAdapter
+
+
+<InfoBlock>:
+    canvas.before:
+        Color:
+            rgba: 0, 0.5, 1, 0.2
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+    spacing: "5dp"
+    SharedLabel:
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0.5, 0.2
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        size_hint_x: 0.15
+        text_size: (0.9*self.width, None)
+        text: root.content_label
+    BoxLayout:
+    SharedButton:
+        size_hint_x: 0.15
+        text: 'Edit'
+        on_press: root.edit()
+
+<ListSummaryInfoBlock>:
+    summary_display: summary_display
+    BoxLayout:
+        orientation: "horizontal"
+        ScrollableTextDisplay:
+            id: summary_display
+        Button:
+            text: root.list_manage_button_name
+            size_hint_x: 0.25
+            text_size: (0.8*self.width, None)
+            on_press: root.manage_list_items()
+
+
+
+<NotesInfoBlock>:
+    content_label: "Notes"
+    ScrollableTextDisplay:
+        text: root.notes
+      
+   
+<PainInfoBlock>:
+    content_label: "Pain Levels"
+    GridLayout:      
+        rows: 2
+        cols: 2
+        id: main_content
+        Label: 
+            text: "Average Pain"
+        Label: 
+            text: root.average_pain
+        Label: 
+            text: "Maximum Pain"
+        Label:
+            text: root.max_pain
+
+
+<PainDetailInfoBlock>:
+    content_label: "Pain Sites"
+    list_manage_button_name: "Manage Sites"
+   
+         
+<SymptomInfoBlock>:
+    content_label: "Other symptoms"
+    list_manage_button_name: "Manage Symptoms"    
+         
+<MedicationInfoBlock>:
+    content_label: "Medications"
+    list_manage_button_name: "Manage Medications"
+            
+<TreatmentInfoBlock>:
+    content_label: "Treatments"
+    list_manage_button_name: "Manage Treatments"
+      
+<SleepInfoBlock>:
+    content_label: "Sleep"
+    sleep_summary_display: sleep_summary_display
+    ScrollableTextDisplay:
+        id: sleep_summary_display
+        text: root.sleep_summary
+              
+<ActivityInfoBlock>:
+    content_label: "Activity"
+    list_manage_button_name: "Manage Activities"
+
