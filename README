@@ -1,0 +1,11 @@
+This is a python app written to support diary keeping for chronic pain,
+possibly other conditions. It is based on common information doctors recommend
+tracking. The set of questions, and corresponding DB structure, may evolved as
+project changes.
+
+The project uses Kivy library and sqlite, which must be installed separately. 
+
+To run, execute "python main.py". By default it uses data/entries.db file in
+the script directory, but you can pass an alternative DB file path on the
+command line.
+
