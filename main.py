@@ -11,7 +11,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen,\
 from kivy.adapters.listadapter import ListAdapter
 
 import datetime
-from data import Record
+from data import Record, Base
 from sqlalchemy.orm.exc import NoResultFound
 
 from kivy.config import Config
@@ -156,9 +156,12 @@ class SymptomDiaryApp(App):
         self.engine_path = engine_path
         super(SymptomDiaryApp, self).__init__(**kwargs)
         self.engine = create_engine(self.engine_path, echo=True)
+        Base.metadata.create_all(self.engine);
+
 
         session_factory = sessionmaker(bind=self.engine)
         self.__Session = scoped_session(session_factory)
+        
         
         
         
