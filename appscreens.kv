@@ -1,4 +1,5 @@
 #:import la kivy.adapters.listadapter.ListAdapter
+#:import dp datepicker.DatePicker
  
 <MyCustomScreen>: 
 
@@ -6,9 +7,10 @@
 <CalendarScreen>:
     main_container: main_container
     GridLayout:
-        rows: 2
+        rows: 3
         spacing: "30dp"
         id: main_container
+	    DatePicker:       
 #      CreateEntryForm:
 # You cannot declare an entry list object here
 # This is because it will have no builder and you will not be able to fill it dynamically
