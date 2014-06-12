@@ -16,8 +16,8 @@ from kivy.uix.button import Button
 from datetime import date, timedelta
 
 from functools import partial
-from kivy.graphics import Color
 from kivy.app import App
+import datetime
 
 class DatePicker(BoxLayout):
     
@@ -78,9 +78,10 @@ class DatePicker(BoxLayout):
             self.body.add_widget(Label(text=""))
         while date_cursor.month == self.date.month:
             date_label = Button(text = str(date_cursor.day))
-            date_label.bind(on_press=partial(self.set_date, 
-                                                  day=date_cursor.day))
-
+            date_label.bind(on_press=lambda *args: 
+                                self.day_clicked(*args, day=date_cursor.day)
+                            )
+                            
             if self.date.day == date_cursor.day:
                 date_label.border = self.border_today
             else:
@@ -94,10 +95,20 @@ class DatePicker(BoxLayout):
             self.body.add_widget(date_label)
             date_cursor += timedelta(days = 1)
 
-    def set_date(self, *args, **kwargs):
+    def day_clicked(self, *args, **kwargs):        
         self.date = date(self.date.year, self.date.month, kwargs['day'])
-        self.populate_body()
-        self.populate_header()
+        self.date_clicked();
+    
+    def date_clicked(self):
+        ''' Main handler -- what to do once the date is selected '''
+        application = App.get_running_app()
+        entry = application.find_entry_by_date(self.date)
+        if (entry is None):
+            application.create_entry_by_date(self.date, 
+                            datetime.datetime.now().time(),
+                            '')
+        application.display_entry_by_date(self.date)
+        
 
     def move_next_month(self, *args, **kwargs):
         if self.date.month == 12:
