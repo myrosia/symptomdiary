@@ -166,10 +166,10 @@ class SymptomDiaryApp(App):
         
         
     def build(self):
-        Builder.load_file('diarywidgets.kv')        
-        Builder.load_file('entryedit.kv')        
-        Builder.load_file('entrydisplay.kv')
-        Builder.load_file('appscreens.kv')
+        Builder.load_file('kv/diarywidgets.kv')        
+        Builder.load_file('kv/entryedit.kv')        
+        Builder.load_file('kv/entrydisplay.kv')
+        Builder.load_file('kv/appscreens.kv')
         # initalise the screen manager, add screens and game widget to game screen then return it
         self.screen_manager = ScreenManager(transition = ShaderTransition(duration=0.01))
         self.calendar_screen = CalendarScreen(name='calendar')
