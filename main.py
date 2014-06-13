@@ -56,8 +56,8 @@ class EntryScreen(MyCustomScreen):
 
 class CalendarScreen(MyCustomScreen):
     entry_list = None
-    def __init__(self, **kvargs):
-        super(CalendarScreen, self).__init__(**kvargs)
+    def __init__(self, **kwargs):
+        super(CalendarScreen, self).__init__(**kwargs)
         self.entry_list = EntryList()
         self.add_widget(self.entry_list)
         self.add_widget(CreateEntryForm())
@@ -121,8 +121,8 @@ class CreateEntryForm(BoxLayout):
     note_input_box = ObjectProperty()
     
     
-    def __init__(self, **kvargs):
-        super(CreateEntryForm, self).__init__(**kvargs)
+    def __init__(self, **kwargs):
+        super(CreateEntryForm, self).__init__(**kwargs)
 #        self.list = EntryList()
 #        self.add_widget(self.list)
 
