@@ -51,6 +51,7 @@
                 text: 'OK'
                 on_press: root.dispatch('on_input_ok')
 
+
 <SliderWithValue>:
     orientation: "horizontal"
     slider: slider
@@ -92,3 +93,35 @@
             size_hint: (1, None)
             height: self.texture_size[1]    
  
+<DatePickerButton>:
+ 
+<DatePicker>:
+	orientation: "vertical"
+	header: header
+	body: body
+	BoxLayout:
+		id: header
+		orientation: "horizontal"
+		size_hint: 1, 0.2
+		Button:
+	    	id: previous_month
+	    	text: "<"
+        	on_press: root.move_previous_month()
+        Label:
+			text: root.current_month_text
+			size_hint: 2, 1
+	    Button:
+	    	id: next_month
+	    	text: ">"
+        	on_press: root.move_next_month()
+    GridLayout:
+		id: body
+		cols: 7
+
+<ColorLabel>:
+	canvas.before:
+    	Color:
+			rgb: root.background_color
+	    Rectangle:
+    		pos: self.pos
+			size: (0.99*root.size[0], root.size[1])

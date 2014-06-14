@@ -10,16 +10,35 @@
         rows: 3
         spacing: "30dp"
         id: main_container
-	    DatePicker:       
-#      CreateEntryForm:
-# You cannot declare an entry list object here
-# This is because it will have no builder and you will not be able to fill it dynamically
-# Instead, initialize it in the code (with no arguments)      
-#      EntryList:
+	    DatePicker:
 
+
+<CreateEntryPopup>:
+    size_hint: 0.9, 0.9
+    auto_dismiss: False
+    title: "Create new entry"
+    entry_form: entry_form
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: "10dp"
+        padding: "10dp"
+
+		CreateEntryForm:
+			id: entry_form
+			entry_date: root.entry_date
+		         
+        BoxLayout:
+            orientation: 'horizontal'
+            StandardButton:
+                text: 'Cancel'
+                on_press: root.dismiss()
+         
+            StandardButton:
+                id: ok_button
+                text: 'OK'
+                on_press: root.create_entry()
 
 <CreateEntryForm>:
-
     canvas.before:
         Color:
             rgba: 0, 0.5, 1, 0.2
@@ -28,14 +47,14 @@
             pos: self.pos
             size: self.size
 
-    note_input_box: note_input   
+    note_input_box: note_input
     orientation: "vertical"
     row_default_height: "40dp"
     spacing: "10dp"
     padding: "10dp"
             
     Label:
-        text: "New Entry for today"
+        text: "New Entry for %s" % root.entry_date
         bold: True
         height: "40dp"
         size_hint_y: None
@@ -49,54 +68,7 @@
         id: note_input
         multiline: True
         size_hint: (1,1)
-        next: create_button
 
-    Button:
-        id: create_button
-        size_hint_y: None
-        height: "40dp"
-        text: "Create"
-        on_press: root.create_entry_for_today()
-
-<EntryList>:
-
-    canvas.before:
-        Color:
-            rgba: 1, 0, 0.3, 0.2
-        Rectangle:
-        # self here refers to the widget i.e BoxLayout
-            pos: self.pos
-            size: self.size
-
-    orientation: "vertical"
-    row_default_height: "40dp"
-    spacing: "10dp"
-    padding: "10dp"
-
-    list_view: list_view
-
-    Label:
-        text: "Earlier Entries"
-        bold: True
-        height: "40dp"
-        size_hint_y: None
- 
-    ListView:
-        id: list_view
-   
-    Button:
-        size_hint_y: None
-        height: "40dp"
-        text: "Show"
-        on_press: root.display_entry_for_selected_date()
-         
-
-<EntryListItem>:
-    size_hint_y: None
-    height: "100dp"
-    Label:
-        text: root.text
-        on_press: root.item_press_function()
 
 
 <EntryScreen>:

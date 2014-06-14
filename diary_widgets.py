@@ -268,3 +268,5 @@ class EditPanelLabel(Label):
 class ScrollableTextDisplay(BoxLayout):
     text = StringProperty()
 
+class ColorLabel(Label):
+    background_color = ObjectProperty()

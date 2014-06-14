@@ -55,84 +55,7 @@ class EntryScreen(MyCustomScreen):
 
 
 class CalendarScreen(MyCustomScreen):
-    entry_list = None
-    def __init__(self, **kwargs):
-        super(CalendarScreen, self).__init__(**kwargs)
-        self.entry_list = EntryList()
-        self.add_widget(self.entry_list)
-        self.add_widget(CreateEntryForm())
-
-    def update_data(self):
-        self.entry_list.update_data();
-
-
-        
-class EntryList(BoxLayout):
-    list_view = ObjectProperty()
-    label_test = ObjectProperty()
-
-    def date_args_converter(self, row_index, date_obj):
-        return {'text': date_obj.isoformat(),
-                'size_hint_y': None,
-                'height': 25}
-
- 
-        
-    def __init__(self, **kvargs):
-        super(EntryList, self).__init__(**kvargs)
-              
-        self.list_view.adapter = ListAdapter(data=[], 
-                                                 cls=ListItemButton, 
-                                                 args_converter=self.date_args_converter,
-                                                 selection_mode='single',
-                                                 allow_empty_selection=False
-                                                 )
-        # See issue https://github.com/kivy/kivy/issues/1321
-        self.list_view.adapter.bind_triggers_to_view(self.list_view._trigger_reset_populate)
-        self.update_data()
-        
-               
-               
-    def update_data(self):
-        app = SymptomDiaryApp.get_running_app()                
-        data = sorted(app.getEntryDates(), reverse=True)
-                    
-        self.list_view.adapter.data = data
-                    
-            
-    def display_entry_for_selected_date(self):
-        date = self.list_view.adapter.data[self.list_view.adapter.selection[0].index]
-        print "Will display entry for ", date
-        app = SymptomDiaryApp.get_running_app()
-        app.display_entry_by_date(date)
-
-        
-
-
-class EntryListItem(BoxLayout):
-    text = StringProperty()
-
-    def item_press_function(self, **args):
-        print "Pressed entrylistitem"
-        pass
-
-
-class CreateEntryForm(BoxLayout):
-    note_input_box = ObjectProperty()
-    
-    
-    def __init__(self, **kwargs):
-        super(CreateEntryForm, self).__init__(**kwargs)
-#        self.list = EntryList()
-#        self.add_widget(self.list)
-
-    
-    def create_entry_for_today(self):        
-        app = SymptomDiaryApp.get_running_app()
-        app.create_entry_by_date(datetime.date.today(), 
-                                 datetime.datetime.now().time(),                                 
-                                 self.note_input_box.text)
-        self.note_input_box.text='';
+    pass
 
  
 class SymptomDiaryApp(App):
@@ -208,9 +131,6 @@ class SymptomDiaryApp(App):
             session = self.getDBSession()
             session.add(new_entry)
             session.commit()
-            # FIXME: this should not be necessary once we fix up the real calendar screen
-            # which will not have entries listed by date
-            self.calendar_screen.update_data();
         else:
             popup = ErrorPopup(                          
                           'Cannot create entry for the date of ' + date.isoformat() + " because one already exists. You can edit it instead",

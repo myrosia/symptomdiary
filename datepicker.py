@@ -8,121 +8,164 @@ Created on 11 Jun 2014
 
 import kivy
 
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 
 from datetime import date, timedelta
 
-from functools import partial
 from kivy.app import App
 import datetime
+from calendar import monthrange
+import sys
+from kivy.properties import ObjectProperty, StringProperty;
+import calendar
+
+from diary_widgets import ColorLabel
+from kivy.uix.popup import Popup
+
+class DatePickerButton(Button):
+    pass
+
 
 class DatePicker(BoxLayout):
-    
+    '''
+        A date picker linked to the main App.
+        The App *must* call "populate" after the initialization is finished
+        populate cannot be called from the 
+    '''
     background_defined = [1, 0, 0, 0.5]
+    background_header = [0, 0.5, 0.5, 0.5]
+
     background_undefined = [0, 0, 1, 0.5]
 
     border_default = (2,2,2,2)
     border_today = (20,20,20,20)
-
-
-    def __init__(self, **kwargs):
-        super(DatePicker, self).__init__(**kwargs)
-        self.date = date.today()
-        self.orientation = "vertical"
-        self.month_names = ('January',
-                            'February', 
-                            'March', 
-                            'April', 
-                            'May', 
-                            'June', 
-                            'July', 
-                            'August', 
-                            'September', 
-                            'October',
-                            'November',
-                            'December')
-        if kwargs.has_key("month_names"):
-            self.month_names = kwargs['month_names']
-        self.header = BoxLayout(orientation = 'horizontal', 
-                                size_hint = (1, 0.2))
-        self.body = GridLayout(cols = 7)
-        self.add_widget(self.header)
-        self.add_widget(self.body)
-
-        self.populate_body()
-        self.populate_header()
-
-    def populate_header(self, *args, **kwargs):
-        self.header.clear_widgets()
-        previous_month = Button(text = "<")
-        previous_month.bind(on_press=partial(self.move_previous_month))
-        next_month = Button(text = ">", on_press = self.move_next_month)
-        next_month.bind(on_press=partial(self.move_next_month))
-        month_year_text = self.month_names[self.date.month -1] + ' ' + str(self.date.year)
-        current_month = Label(text=month_year_text, size_hint = (2, 1))
-
-        self.header.add_widget(previous_month)
-        self.header.add_widget(current_month)
-        self.header.add_widget(next_month)
-
-    def populate_body(self, *args, **kwargs):
-        self.body.clear_widgets()
-        date_cursor = date(self.date.year, self.date.month, 1)
-        
-        application = App.get_running_app()
-        
-        for filler in range(date_cursor.isoweekday()-1):
-            self.body.add_widget(Label(text=""))
-        while date_cursor.month == self.date.month:
-            date_label = Button(text = str(date_cursor.day))
-            date_label.bind(on_press=lambda *args: 
-                                self.day_clicked(*args, day=date_cursor.day)
-                            )
-                            
-            if self.date.day == date_cursor.day:
-                date_label.border = self.border_today
-            else:
-                date_label.border = self.border_default
-                
-            if (application.find_entry_by_date(date_cursor) is not None):
-                date_label.background_color = self.background_defined
-            else:
-                date_label.background_color = self.background_undefined
-                                
-            self.body.add_widget(date_label)
-            date_cursor += timedelta(days = 1)
-
-    def day_clicked(self, *args, **kwargs):        
-        self.date = date(self.date.year, self.date.month, kwargs['day'])
-        self.date_clicked();
     
-    def date_clicked(self):
-        ''' Main handler -- what to do once the date is selected '''
+    ## This is bound to the text of the header label in kv, so if we change it, the label gets set
+    current_month_text = StringProperty()
+
+    ## This is the start of the current month, changes as we browse
+    month_start = None
+    
+    body = ObjectProperty()
+
+
+    
+    def __init__(self, **kwargs):
+        self.month_start = date.today().replace(day=1) 
+        self.set_header()
+        super(DatePicker, self).__init__(**kwargs)         
+        ### We cannot init the body here, it's not ready
+        ### It can be inited dynamically using the on_body method
+    
+    
+    def on_body(self, *args):
+        '''
+        Initialization of the body. Called once, when the body is set.
+        '''
+        if (self.body is not None):
+            self.populate_body()
+        
+    def populate(self):
+        self.set_header()
+        self.populate_body()
+
+    
+
+    def populate_body(self):
+        self.body.clear_widgets()    
         application = App.get_running_app()
-        entry = application.find_entry_by_date(self.date)
+        
+        first_weekday, numdays = monthrange(self.month_start.year, self.month_start.month) 
+        today = date.today()
+
+        # first we will put in a header with appropriately initialized weekdays
+        for dayname in calendar.day_abbr:
+            self.body.add_widget(ColorLabel(text=dayname,
+                                       background_color=self.background_header,
+                                       size_hint = (0.5, 0.99)
+                                       ))
+            
+        
+        # filler fields from previous month, empty
+        for filler in range(first_weekday):
+            self.body.add_widget(Label(text=""))
+
+
+        for day in range(1, numdays + 1):
+            day_button = DatePickerButton(text = str(day))
+            button_date = date(day=day, 
+                               month=self.month_start.month,
+                               year=self.month_start.year)
+            day_button.bind(on_press=lambda instance, bd=button_date: 
+                                self.date_clicked(bd)
+                                )
+                                           
+            if (today == button_date):
+                day_button.border = self.border_today
+            else:
+                day_button.border = self.border_default
+                
+            if (application.find_entry_by_date(button_date) is not None):
+                day_button.background_color = self.background_defined
+            else:
+                day_button.background_color = self.background_undefined
+                                
+            self.body.add_widget(day_button)
+
+
+    def date_clicked(self, date):
+        ''' Main handler -- what to do once the date is selected '''
+        print >> sys.stderr, "Date clicked %s" % date
+        application = App.get_running_app()
+        entry = application.find_entry_by_date(date)
         if (entry is None):
-            application.create_entry_by_date(self.date, 
-                            datetime.datetime.now().time(),
-                            '')
-        application.display_entry_by_date(self.date)
+            self.create_entry_dialog(application, date)
+        else:
+            application.display_entry_by_date(date)
         
 
-    def move_next_month(self, *args, **kwargs):
-        if self.date.month == 12:
-            self.date = date(self.date.year + 1, 1, self.date.day)
-        else:
-            self.date = date(self.date.year, self.date.month + 1, self.date.day)
-        self.populate_header()
-        self.populate_body()
+    def create_entry_dialog(self, application, date):
+        popup = CreateEntryPopup(application, date)
+        popup.open()
 
-    def move_previous_month(self, *args, **kwargs):
-        if self.date.month == 1:
-            self.date = date(self.date.year - 1, 12, self.date.day)
-        else:
-            self.date = date(self.date.year, self.date.month -1, self.date.day)
-        self.populate_header()
-        self.populate_body()
 
+    def makeHeaderText(self, date):
+        return date.strftime('%B %Y')
+        
+    def set_header(self):
+        self.current_month_text = self.makeHeaderText(self.month_start)
+        
+    def move_next_month(self):
+        self.month_start += timedelta(days = monthrange(self.month_start.year, self.month_start.month)[1])
+        self.populate()
+
+    def move_previous_month(self):
+        self.month_start += timedelta(days = -1)
+        ## we are now at the end of previous month -- move to start
+        self.month_start = self.month_start.replace(day=1)
+        self.populate()
+
+
+class CreateEntryPopup(Popup):
+    entry_date = ObjectProperty()
+    entry_form = ObjectProperty()
+    application = None
+
+    def __init__(self, application, date, **kwargs):
+        self.entry_date = date;
+        self.application = application
+        super(CreateEntryPopup, self).__init__(**kwargs)         
+    
+    def create_entry(self):
+        self.application.create_entry_by_date(self.entry_date, 
+                                              datetime.datetime.now().time(),
+                                              self.entry_form.note_input_box.text)
+        self.application.display_entry_by_date(self.entry_date)
+        self.dismiss()
+
+
+class CreateEntryForm(BoxLayout):
+    note_input_box = ObjectProperty()
+    entry_date = ObjectProperty()    
